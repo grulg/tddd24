@@ -26,20 +26,20 @@
                 </div>
                 <div id="signup" class="column-part border">
                     <h4 class="part-header">Sign up</h4>
-                    <form name="signup-form" action="#" method="post">
+                    <form name="signup-form" action="#" onsubmit="submitSignUp(this); return false;">
                         <label for="signup-email">E-mail: </label><input id="signup-email" type="email" name="email" />
                         <label for="signup-pwd">Password: </label><input id="signup-pwd" type="password" name="password" />
                         <label for="signup-repwd">Re-enter: </label><input for="signup-repwd" type="password" name="password2" />
                         <label for="signup-fname">First name: </label><input id="signup-fname" type="text" name="fname" />
                         <label for="signup-lname">Last name: </label><input id="signup-lname" type="text" name="lname" />
                         <label>Gender: </label>
-                        <select form="signup-form">
+                        <select name="gender">
                             <option value="female">Female</option>
                             <option value="male">Male</option>
                         </select>
                         <label for="signup-city">City: </label><input id="signup-city" type="text" name="city" />
                         <label for="signup-country">Country: </label><input id="signup-country" type="text" name="country" />
-                        <span id="sign-up-message"></span><input class="submit-btn" type="submit" value="Sign up" onClick="submitSignup" />
+                        <span id="sign-up-message"></span><input class="submit-btn" type="submit" value="Sign up" onClick="submitSignUp" />
                     </form>
                 </div>
             </div>
