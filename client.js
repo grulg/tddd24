@@ -10,13 +10,15 @@ window.onload = function() {
 };
 
 displayView = function() {
-    var view;
     if(localStorage.token != null) {
-        view = document.getElementById("profileview");
+        document.getElementById("view").innerHTML = document.getElementById("profileview").innerHTML;
+        var userData = serverstub.getUserDataByToken(localStorage.token).data;
+        localStorage.userData = userData;
+        populateBio(userData);
+        reloadWall();
     } else {
-        view = document.getElementById("welcomeview");
+        document.getElementById("view").innerHTML = document.getElementById("welcomeview").innerHTML;
     }
-    document.getElementById("view").innerHTML = view.innerHTML;
 };
 
 submitLogin = function(formData) {
@@ -159,7 +161,49 @@ validateChangePassword = function(formData) {
 };
 
 submitSignOut = function() {
-    var result = serverstub.signOut(localStorage.token);
+    serverstub.signOut(localStorage.token);
     localStorage.removeItem("token");
+    localStorage.removeItem("userData");
     location.reload();
+};
+
+populateBio = function(userData) {
+    var text = userData.firstname + " " + userData.familyname + "<br/>" +
+        userData.gender + " from " + userData.city + ", " + userData.country +
+        "<br/><a href='mailto:" + userData.email + "'>" +
+        userData.email + "</a>";
+
+    document.getElementById("bio").innerHTML = text;
+};
+
+
+submitPostMessage = function(formData) {
+    var callback = function() {
+        document.getElementById("postMessageResultMessage").innerHTML = "";
+    };
+
+    var result = serverstub.postMessage(localStorage.token, formData.message.value, localStorage.userData.email);
+    document.getElementById("postMessageResultMessage").innerHTML = result.message;
+    setTimeout(callback, 8000);
+    if(result.success) {
+        formData.message.value = "";
+        reloadWall();
+    }
+};
+
+reloadWall = function() {
+    console.log("Fetching messages...");
+    var result = serverstub.getUserMessagesByToken(localStorage.token);
+    if(result.success) {
+        console.log("Success!");
+        document.getElementById("messageArea").innerHTML = "";
+        for(i = 0 ; i < result.data.length ; i++) {
+            document.getElementById("messageArea").innerHTML += generateMessage(result.data[i]);
+        }
+    }
+};
+
+generateMessage = function(message) {
+    return "<div class='streamMessage'><h2>" + message.writer + " wrote...</h2><br/>"
+        + message.content + "</div>";
 };

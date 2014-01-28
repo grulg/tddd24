@@ -53,7 +53,18 @@
                 <li onClick="tabSelect(2)">Account</li>
             </ul>
             <div id="home">
-                <p>Penis</p>
+                <div id="bio"></div>
+                <div id="postArea">
+                    <form name="postMessageForm" action="#" onSubmit="submitPostMessage(this); return false;">
+                        <textarea name="message"></textarea><br>
+                        <input type="submit" value="Post message" /><span id="postMessageResultMessage"></span>
+                    </form>
+                </div>
+                <div id="wall">
+                    <h4 class="part-header">Da wall</h4>
+                    <div id="messageArea"></div>
+                    <input type="submit" value="Reload" onClick="reloadWall();" />
+                </div>
             </div>
             <div id="browse">
                 <p>Browse</p>
