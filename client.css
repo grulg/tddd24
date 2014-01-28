@@ -7,7 +7,7 @@ body {
     margin: 100px auto;
 }
 
-#sign-up-message {
+.notice {
     font-size: 75%;
 }
 

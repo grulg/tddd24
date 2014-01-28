@@ -1,17 +1,31 @@
 window.onload = function() {
     displayView();
+    // TODO Error when logged, when signUpForm "doesn't exist"
     defaultBorder = document.signUpForm.elements[0].style.border;
 };
 
 displayView = function() {
-    var welcomeView = document.getElementById("welcomeview");
-    document.getElementById("view").innerHTML = welcomeView.innerHTML;
+    var view
+    if(localStorage.token != null) {
+        view = document.getElementById("profileview");
+    } else {
+        view = document.getElementById("welcomeview");
+    }
+    document.getElementById("view").innerHTML = view.innerHTML;
 };
 
 submitLogin = function(formData) {
     console.log("Validating... ");
     if(validateSignIn(formData)) {
         console.log("Complete.");
+        var result = serverstub.signIn(formData.signInEmail.value, formData.signInPassword.value);
+        if(result.success) {
+            localStorage.token = result.data;
+            location.reload();
+        } else {
+            document.getElementById("sign-in-message").innerHTML = result.message;
+            formData.signInEmail.style.borderColor = "red"
+        }
     } else {
         console.log("User fucked up.");
     }
@@ -89,5 +103,7 @@ clearErrorBorder = function(element) {
 
     if(element.name == "email") {
         document.getElementById("sign-up-message").innerHTML = "";
+    } else if(element.name == "signInEmail") {
+        document.getElementById("sign-in-message").innerHTML = "";
     }
 }

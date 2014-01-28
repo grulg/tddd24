@@ -19,9 +19,9 @@
                 <div id="login" class="column-part border">
                     <h4 class="part-header">Log in</h4>
                     <form name="login-form" action="#" onsubmit="submitLogin(this); return false;">
-                        <label for="login-email">E-mail: </label><input id="login-email" type="email" name="signInEmail" />
-                        <label for="login-password">Password: </label><input id="login-password" type="password" name="signInPassword" />
-                        <span id="sign-in-message"></span><input class="submit-btn" type="submit" value="Log in" onClick="submitLogin" />
+                        <label for="login-email">E-mail: </label><input id="login-email" type="email" name="signInEmail" onChange="clearErrorBorder(this);"/>
+                        <label for="login-password">Password: </label><input id="login-password" type="password" name="signInPassword" onChange="clearErrorBorder(this);" />
+                        <span id="sign-in-message" class="notice"></span><input class="submit-btn" type="submit" value="Log in" onClick="submitLogin" />
                     </form>
                 </div>
                 <div id="signup" class="column-part border">
@@ -39,14 +39,14 @@
                         </select>
                         <label for="signup-city">City: </label><input id="signup-city" type="text" name="city" onChange="clearErrorBorder(this);" />
                         <label for="signup-country">Country: </label><input id="signup-country" type="text" name="country" onChange="clearErrorBorder(this);" />
-                        <span id="sign-up-message"></span><input class="submit-btn" type="submit" value="Sign up" onChange="submitSignUp" onFocus="clearErrorBorder(this);" />
+                        <span id="sign-up-message" class="notice"></span><input class="submit-btn" type="submit" value="Sign up" onChange="submitSignUp" onFocus="clearErrorBorder(this);" />
                     </form>
                 </div>
             </div>
         </div>
     </script>
     <script id="profileview" type="text/view">
-
+        <h1>Snel Hest Hestar Hage</h1>
     </script>
 
     <script src="client.js" type="text/javascript"></script>
