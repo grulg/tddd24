@@ -4,6 +4,8 @@ window.onload = function() {
     // TODO Find more elegant solution for the "default border"
     if(document.getElementById("signup-email") != null) {
         defaultBorder = document.signUpForm.elements[0].style.border;
+    } else if(document.getElementById("oldPassword") != null) {
+        defaultBorder = document.getElementById("oldPassword").style.border;
     }
 };
 
@@ -125,4 +127,33 @@ tabSelect = function(index) {
         document.getElementById("browse").style.display = "none";
         document.getElementById("account").style.display = "block";
     }
+};
+
+submitChangePassword = function(formData) {
+    console.log("Validating...");
+    if(validateChangePassword(formData)) {
+
+        var result = serverstub.changePassword(localStorage.token, formData.oldPassword.value, formData.newPassword.value);
+        document.getElementById("changePasswordMessage").innerHTML = result.message;
+        if(result.success) {
+            formData.oldPassword.value = "";
+            formData.newPassword.value = "";
+            formData.newPassword2.value = "";
+        } else {
+            formData.oldPassword.value = "";
+            formData.oldPassword.style.borderColor = "red";
+        }
+
+    } else {
+        console.log("User fucked up.");
+    }
+};
+
+validateChangePassword = function(formData) {
+    if(formData.newPassword.value != formData.newPassword2.value) {
+        formData.newPassword.style.borderColor = "red";
+        formData.newPassword2.style.borderColor = "red";
+        return false;
+    }
+    return true;
 };

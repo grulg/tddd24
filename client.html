@@ -39,7 +39,7 @@
                         </select>
                         <label for="signup-city">City: </label><input id="signup-city" type="text" name="city" onChange="clearErrorBorder(this);" />
                         <label for="signup-country">Country: </label><input id="signup-country" type="text" name="country" onChange="clearErrorBorder(this);" />
-                        <span id="sign-up-message" class="notice"></span><input class="submit-btn" type="submit" value="Sign up" onChange="submitSignUp" onFocus="clearErrorBorder(this);" />
+                        <span id="sign-up-message" class="notice"></span><input class="submit-btn" type="submit" value="Sign up" />
                     </form>
                 </div>
             </div>
@@ -59,7 +59,16 @@
                 <p>Browse</p>
             </div>
             <div id="account">
-                <p>Account</p>
+                <h4 class="part-header">Change password</h4>
+                <form name="changePasswordForm" action="#" onSubmit="submitChangePassword(this); return false;">
+                    <label for="oldPassword">Old password: </label><br/>
+                    <input type="password" name="oldPassword" id="oldPassword" onChange="clearErrorBorder(this);"/><br/>
+                    <label for="newPassword">New password: </label><br/>
+                    <input type="password" name="newPassword" onChange="clearErrorBorder(this);" /><br/>
+                    <label for="newPassword2">Retype: </label><br/>
+                    <input type="password" name="newPassword2" onChange="clearErrorBorder(this);" /><br/>
+                    <input type="submit" value="Change password" /><span id="changePasswordMessage" class="notice"></span>
+                </form>
             </div>
         </div>
     </script>

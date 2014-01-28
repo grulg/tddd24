@@ -74,20 +74,20 @@ body {
     display: none;
 }
 
-label{
+column label{
     display: inline-block;
     float: left;
     width: 95px;
     text-align: left;
 }
 
-input {
+column input {
     display: inline-block;
     float: left;
     margin: 1px 0;
 }
 
-select {
+column select {
     display: inline-block;
     float: left;
     width: 142px;

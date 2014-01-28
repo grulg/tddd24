@@ -136,6 +136,7 @@ serverstub.changePassword = function(token, oldPassword, newPassword){
         var email = serverstub.tokenToEmail(token);
         if (users[email].password == oldPassword){
             users[email].password = newPassword;
+            serverstub.persistUsers();
             return {"success": true, "message": "Password changed."};
         } else {
             return {"success": false, "message": "Wrong password."};
