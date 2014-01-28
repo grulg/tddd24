@@ -162,4 +162,4 @@ submitSignOut = function() {
     var result = serverstub.signOut(localStorage.token);
     localStorage.removeItem("token");
     location.reload();
-}
+};
