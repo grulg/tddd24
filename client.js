@@ -1,7 +1,10 @@
 window.onload = function() {
     displayView();
-    // TODO Error when logged, when signUpForm "doesn't exist"
-    defaultBorder = document.signUpForm.elements[0].style.border;
+
+    // TODO Find more elegant solution for the "default border"
+    if(document.getElementById("signup-email") != null) {
+        defaultBorder = document.signUpForm.elements[0].style.border;
+    }
 };
 
 displayView = function() {
