@@ -8,7 +8,7 @@ window.onload = function() {
 };
 
 displayView = function() {
-    var view
+    var view;
     if(localStorage.token != null) {
         view = document.getElementById("profileview");
     } else {
@@ -98,7 +98,7 @@ clearSignUpForm = function(formData) {
     formData.gender.selectedIndex = 0;
     formData.city.value = "";
     formData.country.value = "";
-}
+};
 
 clearErrorBorder = function(element) {
     // TODO Prettier solution? defaultBorder is declared in onLoad...
@@ -109,4 +109,20 @@ clearErrorBorder = function(element) {
     } else if(element.name == "signInEmail") {
         document.getElementById("sign-in-message").innerHTML = "";
     }
-}
+};
+
+tabSelect = function(index) {
+    if(index == 0) {
+        document.getElementById("home").style.display = "block";
+        document.getElementById("browse").style.display = "none";
+        document.getElementById("account").style.display = "none";
+    } else if(index == 1) {
+        document.getElementById("home").style.display = "none";
+        document.getElementById("browse").style.display = "block";
+        document.getElementById("account").style.display = "none";
+    } else if(index == 2) {
+        document.getElementById("home").style.display = "none";
+        document.getElementById("browse").style.display = "none";
+        document.getElementById("account").style.display = "block";
+    }
+};

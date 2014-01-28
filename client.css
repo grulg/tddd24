@@ -2,7 +2,7 @@ body {
     background-color: #eee;
 }
 
-#container {
+.container {
     width: 600px;
     margin: 100px auto;
 }
@@ -36,11 +36,22 @@ body {
     float: right;
 }
 
+.menu li {
+    display: inline;
+    padding: 10px;
+    background-color: #A5ABF2;
+}
+
+.menu :hover {
+    background-color: #333FD4;
+}
+
+
 #logo {
     width: 338px;
     height: 398px;
     margin-right: 10px;
-    padding: 0px;
+    padding: 0;
 }
 
 #login {
@@ -49,6 +60,18 @@ body {
 
 #signup {
     height: 61.5%;
+}
+
+#home {
+    display: block;
+}
+
+#browse {
+    display: none;
+}
+
+#account {
+    display: none;
 }
 
 label{
