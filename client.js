@@ -21,6 +21,10 @@ displayView = function() {
     }
 };
 
+/**
+ * Submits sign in to the server if input passes validation.
+ * @param formData The signInForm
+ */
 submitLogin = function(formData) {
     console.log("Validating... ");
     if(validateSignIn(formData)) {
@@ -38,6 +42,12 @@ submitLogin = function(formData) {
     }
 };
 
+
+/**
+ * Validates sign in form
+ * @param formData The signInForm
+ * @returns {boolean} false if email or password is empty, else true
+ */
 validateSignIn = function(formData) {
     var email = formData.signInEmail.value;
     var password = formData.signInPassword.value;
@@ -45,6 +55,11 @@ validateSignIn = function(formData) {
     return email.trim() != "" && password != "";
 };
 
+
+/**
+ * Submits sign up to server if user input passes validation.
+ * @param formData The signUpForm.
+ */
 submitSignUp = function(formData) {
     console.log("Validating... ");
     if(validateSignUp(formData)) {
@@ -73,6 +88,12 @@ submitSignUp = function(formData) {
     }
 };
 
+
+/**
+ * Validates the signUpForm.
+ * @param formData The signUpForm
+ * @returns {boolean} false if a element is empty or password and retype doesn't match
+ */
 validateSignUp = function(formData) {
 
     var okay = true;
@@ -93,6 +114,10 @@ validateSignUp = function(formData) {
     return okay;
 };
 
+/**
+ * Clears the signUpForm.
+ * @param formData The signUpForm
+ */
 clearSignUpForm = function(formData) {
     formData.email.value = "";
     formData.password.value = "";
@@ -104,6 +129,10 @@ clearSignUpForm = function(formData) {
     formData.country.value = "";
 };
 
+/**
+ * Uses the globally defined defaultBorder for reseting borders on given element.
+ * @param element The element which borders are to be cleared on
+ */
 clearErrorBorder = function(element) {
     // TODO Prettier solution? defaultBorder is declared in onLoad...
     element.style.border = defaultBorder;
@@ -115,6 +144,10 @@ clearErrorBorder = function(element) {
     }
 };
 
+/**
+ * Select which tab to be visible in the profileview.
+ * @param index 0 displays home, 1 displays browse and 2 displays account tab
+ */
 tabSelect = function(index) {
     if(index == 0) {
         document.getElementById("home").style.display = "block";
@@ -131,6 +164,10 @@ tabSelect = function(index) {
     }
 };
 
+/**
+ * Submits password change to server if new password passes validation.
+ * @param formData The form
+ */
 submitChangePassword = function(formData) {
     console.log("Validating...");
     if(validateChangePassword(formData)) {
@@ -151,6 +188,11 @@ submitChangePassword = function(formData) {
     }
 };
 
+/**
+ * Validates the change password form.
+ * @param formData The form.
+ * @returns {boolean} false if newPassword != newPassword2 (the retyoe)
+ */
 validateChangePassword = function(formData) {
     if(formData.newPassword.value != formData.newPassword2.value) {
         formData.newPassword.style.borderColor = "red";
@@ -160,6 +202,9 @@ validateChangePassword = function(formData) {
     return true;
 };
 
+/**
+ * Signs out the user on the server and removes local token and userData
+ */
 submitSignOut = function() {
     serverstub.signOut(localStorage.token);
     localStorage.removeItem("token");
@@ -167,6 +212,10 @@ submitSignOut = function() {
     location.reload();
 };
 
+/**
+ * Populates the bio-element with user data.
+ * @param userData As given by serverstyb.getUserDataByToken(localStorage.token).data or the like
+ */
 populateBio = function(userData) {
     var text = userData.firstname + " " + userData.familyname + "<br/>" +
         userData.gender + " from " + userData.city + ", " + userData.country +
@@ -177,32 +226,59 @@ populateBio = function(userData) {
 };
 
 
-submitPostMessage = function(formData) {
-    var callback = function() {
-        document.getElementById("postMessageResultMessage").innerHTML = "";
-    };
+submitPostMessage = function(formData, recieverEmail) {
 
-    var result = serverstub.postMessage(localStorage.token, formData.message.value, localStorage.userData.email);
-    document.getElementById("postMessageResultMessage").innerHTML = result.message;
-    setTimeout(callback, 8000);
+    var result;
+    if(recieverEmail === undefined) {
+        result = serverstub.postMessage(localStorage.token, formData.message.value, localStorage.userData.email);
+    } else {
+        result = serverStub.postMessage(localStorage.token, formData.message.value, recieverEmail);
+    }
+
     if(result.success) {
         formData.message.value = "";
         reloadWall();
     }
+
+    document.getElementById("postMessageResultMessage").innerHTML = result.message;
+
+    // Callback for removing the message after a couple of seconds
+    var callback = function() {
+        document.getElementById("postMessageResultMessage").innerHTML = "";
+    };
+    setTimeout(callback, 8000);
+
 };
 
-reloadWall = function() {
+/**
+ * Fetches messages for the wall and puts them in the #messageArea. If the email paramter is omitted, the currently
+ * signed in users' messages will be fetched.
+ * @param email (optional) The email of the user for which you want to fetch messages from.
+ */
+reloadWall = function(email) {
     console.log("Fetching messages...");
-    var result = serverstub.getUserMessagesByToken(localStorage.token);
+
+    var result;
+    if(email === undefined) {
+        result = serverstub.getUserMessagesByToken(localStorage.token);
+    } else {
+        result = serverstub.getUserMessagesByEmail(localStorage.token, email);
+    }
+
     if(result.success) {
         console.log("Success!");
-        document.getElementById("messageArea").innerHTML = "";
+        document.getElementById("messageArea").innerHTML = result.data.length > 0 ? "" : "<h2>No messages yet... ='(</h2>";
         for(i = 0 ; i < result.data.length ; i++) {
             document.getElementById("messageArea").innerHTML += generateMessage(result.data[i]);
         }
     }
 };
 
+/**
+ * Generate a message for the stream with given data.
+ * @param message A single message as provided by serverstub.getUserMessagesByToken() (or similar methods).
+ * @returns {string} HTML for a stream message.
+ */
 generateMessage = function(message) {
     return "<div class='streamMessage'><h2>" + message.writer + " wrote...</h2><br/>"
         + message.content + "</div>";
