@@ -1,5 +1,12 @@
 window.onload = function() {
-    displayView();
+
+    if(localStorage.token != null) {
+        var userData = serverstub.getUserDataByToken(localStorage.token).data;
+        localStorage.userData = userData;
+        displayView("profileview", userData);
+    } else {
+        displayView("welcomeview");
+    }
 
     // TODO Find more elegant solution for the "default border"
     if(document.getElementById("signup-email") != null) {
@@ -9,13 +16,16 @@ window.onload = function() {
     }
 };
 
-displayView = function() {
+/**
+ * Displays given view
+ * @param view "welcomeview or "profileview"
+ * @param userData (optional) Needed with "profileview"
+ */
+displayView = function(view, userData) {
     if(localStorage.token != null) {
         document.getElementById("view").innerHTML = document.getElementById("profileview").innerHTML;
-        var userData = serverstub.getUserDataByToken(localStorage.token).data;
-        localStorage.userData = userData;
         populateBio(userData);
-        reloadWall();
+        reloadWall(userData.email);
     } else {
         document.getElementById("view").innerHTML = document.getElementById("welcomeview").innerHTML;
     }
@@ -32,6 +42,7 @@ submitLogin = function(formData) {
         var result = serverstub.signIn(formData.signInEmail.value, formData.signInPassword.value);
         if(result.success) {
             localStorage.token = result.data;
+            localStorage.userData = serverstub.getUserDataByToken(token).data;
             location.reload();
         } else {
             document.getElementById("sign-in-message").innerHTML = result.message;
@@ -153,6 +164,10 @@ tabSelect = function(index) {
         document.getElementById("home").style.display = "block";
         document.getElementById("browse").style.display = "none";
         document.getElementById("account").style.display = "none";
+        // If I use localStorage to get user data, it only returns undefined
+        var result = serverstub.getUserDataByToken(localStorage.token);
+        populateBio(result.data);
+        reloadWall(result.data.email);
     } else if(index == 1) {
         document.getElementById("home").style.display = "none";
         document.getElementById("browse").style.display = "block";
@@ -282,4 +297,27 @@ reloadWall = function(email) {
 generateMessage = function(message) {
     return "<div class='streamMessage'><h2>" + message.writer + " wrote...</h2><br/>"
         + message.content + "</div>";
+};
+
+
+submitBrowse = function(formData) {
+    var email = formData.browseEmail.value;
+    var callback = function() {
+        document.getElementById("browseMessage").innerHTML = "";
+    };
+
+    if(email != "") {
+        var result = serverstub.getUserDataByEmail(localStorage.token, email);
+        if(result.success) {
+            displayView("profileview", result.data);
+            populateBio(result.data);
+        } else {
+            document.getElementById("browseMessage").innerHTML = result.message;
+            setTimeout(callback, 8000);
+        }
+    } else {
+        document.getElementById("browseMessage").innerHTML = "You have to fill in an email!";
+        document.getElementById("browseMessage").style.borderColor = "red";
+        setTimeout(callback, 8000);
+    }
 };

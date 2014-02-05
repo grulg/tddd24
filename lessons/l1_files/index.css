@@ -1,0 +1,27 @@
+#searchform{
+    margin-top: 50px;
+}
+
+body{
+    background-color: gray;
+}
+
+button{
+    float: right;
+}
+
+form{
+    width: 400px;
+    border: 1px solid;
+}
+form div{
+    overflow: hidden;
+}
+
+form div input{
+    width: 100%;
+}
+label{
+    float: left;
+}
+

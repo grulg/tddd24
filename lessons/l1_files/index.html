@@ -1,0 +1,35 @@
+<html>
+<!--
+Lesson 1,
+Subject: Client-side programming
+Date and time: Wednesday 22nd of January 2014. 10:15-12 am.
+Location: C1 Seminar room, C building, Campus Valla.
+Author: Sahand Sadjadee
+
+Revised version.
+-->
+
+    <head>
+        <title>this is lesson 1</title>
+        <script src="index.js" type="text/javascript"></script>
+        <link type="text/css" href="index.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <form action="#" onsubmit="store(this);return false;">
+            <label>Firstname</label><div><input type="text" id="firstname"></div>
+            <label>Lastname</label><div><input type="text" id="familyname"></div>
+            <label>Phone number</label><div><input type="text" id="phonenumber"></div>
+            <div><button type="reset">Reset</button><button type="submit">Save</button></div>
+        </form>
+        <form action="#" onsubmit="search(this);return false;" id ="searchform" >
+            <label>Firstname</label><div><input type="text" id="firstname2"></div>
+            <label>Lastname</label><div><input type="text" id="familyname2"><br></div>
+            <div><button type="submit">search</button></div>
+        </form>
+
+        <div id="result" style="width: 200px"></div>
+
+    </body>
+
+</html>
