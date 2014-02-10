@@ -2,10 +2,10 @@ window.onload = function() {
 
     if(localStorage.token != null) {
         var userData = serverstub.getUserDataByToken(localStorage.token).data;
-        localStorage.userData = userData;
-        displayView("profileview", userData);
+        displayView(userData);
+        localStorage.currentUserView = userData.email;
     } else {
-        displayView("welcomeview");
+        displayView();
     }
 
     // TODO Find more elegant solution for the "default border"
@@ -17,11 +17,10 @@ window.onload = function() {
 };
 
 /**
- * Displays given view
- * @param view "welcomeview or "profileview"
+ * Displays given "welcomeview" or "profileview" depending on if token is set
  * @param userData (optional) Needed with "profileview"
  */
-displayView = function(view, userData) {
+displayView = function(userData) {
     if(localStorage.token != null) {
         document.getElementById("view").innerHTML = document.getElementById("profileview").innerHTML;
         populateBio(userData);
@@ -36,20 +35,17 @@ displayView = function(view, userData) {
  * @param formData The signInForm
  */
 submitLogin = function(formData) {
-    console.log("Validating... ");
     if(validateSignIn(formData)) {
-        console.log("Complete.");
         var result = serverstub.signIn(formData.signInEmail.value, formData.signInPassword.value);
         if(result.success) {
             localStorage.token = result.data;
-            localStorage.userData = serverstub.getUserDataByToken(token).data;
-            location.reload();
+            var userData = serverstub.getUserDataByToken(result.data).data;
+            localStorage.currentUserView = userData.email;
+            displayView(userData);
         } else {
             document.getElementById("sign-in-message").innerHTML = result.message;
             formData.signInEmail.style.borderColor = "red"
         }
-    } else {
-        console.log("User fucked up.");
     }
 };
 
@@ -72,9 +68,8 @@ validateSignIn = function(formData) {
  * @param formData The signUpForm.
  */
 submitSignUp = function(formData) {
-    console.log("Validating... ");
+
     if(validateSignUp(formData)) {
-        console.log("Complete.");
 
         var dataObject = new Object();
         dataObject.email = formData.email.value;
@@ -94,8 +89,6 @@ submitSignUp = function(formData) {
             formData.email.style.borderColor = "red"
         }
 
-    } else {
-        console.log("User fucked up.");
     }
 };
 
@@ -164,10 +157,11 @@ tabSelect = function(index) {
         document.getElementById("home").style.display = "block";
         document.getElementById("browse").style.display = "none";
         document.getElementById("account").style.display = "none";
-        // If I use localStorage to get user data, it only returns undefined
+        // Get data of logged in user
         var result = serverstub.getUserDataByToken(localStorage.token);
         populateBio(result.data);
         reloadWall(result.data.email);
+        localStorage.currentUserView = result.data.email;
     } else if(index == 1) {
         document.getElementById("home").style.display = "none";
         document.getElementById("browse").style.display = "block";
@@ -184,7 +178,7 @@ tabSelect = function(index) {
  * @param formData The form
  */
 submitChangePassword = function(formData) {
-    console.log("Validating...");
+
     if(validateChangePassword(formData)) {
 
         var result = serverstub.changePassword(localStorage.token, formData.oldPassword.value, formData.newPassword.value);
@@ -198,15 +192,13 @@ submitChangePassword = function(formData) {
             formData.oldPassword.style.borderColor = "red";
         }
 
-    } else {
-        console.log("User fucked up.");
     }
 };
 
 /**
  * Validates the change password form.
  * @param formData The form.
- * @returns {boolean} false if newPassword != newPassword2 (the retyoe)
+ * @returns {boolean} false if newPassword != newPassword2 (the retype)
  */
 validateChangePassword = function(formData) {
     if(formData.newPassword.value != formData.newPassword2.value) {
@@ -223,7 +215,7 @@ validateChangePassword = function(formData) {
 submitSignOut = function() {
     serverstub.signOut(localStorage.token);
     localStorage.removeItem("token");
-    localStorage.removeItem("userData");
+    localStorage.removeItem("currentUserView");
     location.reload();
 };
 
@@ -241,18 +233,22 @@ populateBio = function(userData) {
 };
 
 
-submitPostMessage = function(formData, recieverEmail) {
+/**
+ * Posts a message to the user as defined by localStorage.currentUserView.
+ * @param formData
+ */
+submitPostMessage = function(formData) {
 
     var result;
-    if(recieverEmail === undefined) {
-        result = serverstub.postMessage(localStorage.token, formData.message.value, localStorage.userData.email);
+    if(localStorage.currentUserView === undefined) {
+        result = serverstub.postMessage(localStorage.token, formData.message.value, serverstub.getUserDataByToken(localStorage.token));
     } else {
-        result = serverStub.postMessage(localStorage.token, formData.message.value, recieverEmail);
+        result = serverstub.postMessage(localStorage.token, formData.message.value, localStorage.currentUserView);
     }
 
     if(result.success) {
         formData.message.value = "";
-        reloadWall();
+        reloadWall(localStorage.currentUserView);
     }
 
     document.getElementById("postMessageResultMessage").innerHTML = result.message;
@@ -271,17 +267,15 @@ submitPostMessage = function(formData, recieverEmail) {
  * @param email (optional) The email of the user for which you want to fetch messages from.
  */
 reloadWall = function(email) {
-    console.log("Fetching messages...");
 
     var result;
     if(email === undefined) {
-        result = serverstub.getUserMessagesByToken(localStorage.token);
+        result = serverstub.getUserMessagesByEmail(localStorage.token, localStorage.currentUserView);
     } else {
         result = serverstub.getUserMessagesByEmail(localStorage.token, email);
     }
 
     if(result.success) {
-        console.log("Success!");
         document.getElementById("messageArea").innerHTML = result.data.length > 0 ? "" : "<h2>No messages yet... ='(</h2>";
         for(i = 0 ; i < result.data.length ; i++) {
             document.getElementById("messageArea").innerHTML += generateMessage(result.data[i]);
@@ -295,11 +289,14 @@ reloadWall = function(email) {
  * @returns {string} HTML for a stream message.
  */
 generateMessage = function(message) {
-    return "<div class='streamMessage'><h2>" + message.writer + " wrote...</h2><br/>"
+    return "<div class='wallMessage'><h2>" + message.writer + " wrote...</h2><br/>"
         + message.content + "</div>";
 };
 
-
+/***
+ * Fetches the profileview of the given user.
+ * @param formData
+ */
 submitBrowse = function(formData) {
     var email = formData.browseEmail.value;
     var callback = function() {
@@ -309,8 +306,8 @@ submitBrowse = function(formData) {
     if(email != "") {
         var result = serverstub.getUserDataByEmail(localStorage.token, email);
         if(result.success) {
-            displayView("profileview", result.data);
-            populateBio(result.data);
+            localStorage.currentUserView = result.data.email;
+            displayView(result.data);
         } else {
             document.getElementById("browseMessage").innerHTML = result.message;
             setTimeout(callback, 8000);

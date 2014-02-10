@@ -94,3 +94,30 @@ body {
     width: 142px;
     margin: 1px 0;
 }
+
+#home div {
+    float: left;
+    padding: 10px;
+}
+
+#wall h2 {
+    margin: 0;
+}
+
+/*#messageArea :nth-child(even) {
+    background-color: #A5ABF2;
+}
+
+#messageArea :nth-child(odd) {
+    background-color: #321;
+}*/
+
+.wallMessage {
+    background-color: #aaa;
+    margin: 5px 0;
+    width: 100%
+}
+
+#account div {
+    float: left;
+}
