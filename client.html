@@ -29,16 +29,17 @@
                     <form name="signUpForm" action="#" onsubmit="submitSignUp(this); return false;">
                         <label for="signup-email">E-mail: </label><input id="signup-email" type="email" name="email" onChange="clearErrorBorder(this);" />
                         <label for="signup-pwd">Password: </label><input id="signup-pwd" type="password" name="password" onChange="clearErrorBorder(this);" />
-                        <label for="signup-repwd">Re-enter: </label><input type="password" name="password2" onChange="clearErrorBorder(this);" />
+                        <label for="signup-repwd">Re-enter: </label><input id="signup-repwd" type="password" name="password2" onChange="clearErrorBorder(this);" />
                         <label for="signup-fname">First name: </label><input id="signup-fname" type="text" name="fname" onChange="clearErrorBorder(this);" />
                         <label for="signup-lname">Last name: </label><input id="signup-lname" type="text" name="lname" onChange="clearErrorBorder(this);" />
-                        <label>Gender: </label>
-                        <select name="gender">
+                        <label for="signup-gender">Gender: </label>
+                        <select id="signup-gender" name="gender">
                             <option value="Female">Female</option>
                             <option value="Male">Male</option>
                         </select>
                         <label for="signup-city">City: </label><input id="signup-city" type="text" name="city" onChange="clearErrorBorder(this);" />
                         <label for="signup-country">Country: </label><input id="signup-country" type="text" name="country" onChange="clearErrorBorder(this);" />
+                        <div class="clear"></div>
                         <span id="sign-up-message" class="notice"></span><input class="submit-btn" type="submit" value="Sign up" />
                     </form>
                 </div>
@@ -82,9 +83,9 @@
                         <label for="oldPassword">Old password: </label><br/>
                         <input type="password" name="oldPassword" id="oldPassword" onChange="clearErrorBorder(this);"/><br/>
                         <label for="newPassword">New password: </label><br/>
-                        <input type="password" name="newPassword" onChange="clearErrorBorder(this);" /><br/>
+                        <input id="newPassword" type="password" name="newPassword" onChange="clearErrorBorder(this);" /><br/>
                         <label for="newPassword2">Retype: </label><br/>
-                        <input type="password" name="newPassword2" onChange="clearErrorBorder(this);" /><br/>
+                        <input id="newPassword2" type="password" name="newPassword2" onChange="clearErrorBorder(this);" /><br/>
                         <input type="submit" value="Change password" /><span id="changePasswordMessage" class="notice"></span>
                     </form>
                 </div>

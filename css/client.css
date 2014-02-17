@@ -3,6 +3,10 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+.clear {
+    clear: both;
+}
+
 .container {
     width: 600px;
     margin: 100px auto;
@@ -27,13 +31,13 @@ body {
 }
 
 .column-part {
-    width: 238px;
+    width: 237px;
     padding: 5px;
     margin-bottom: 10px;
     background-color: #fff;
 }
 
-.submit-btn {
+.column .submit-btn {
     float: right;
 }
 
@@ -104,13 +108,13 @@ body {
     margin: 0;
 }
 
-/*#messageArea :nth-child(even) {
+#messageArea > :nth-child(even) {
     background-color: #A5ABF2;
 }
 
-#messageArea :nth-child(odd) {
-    background-color: #321;
-}*/
+#messageArea > :nth-child(odd) {
+    background-color: #7d82af;
+}
 
 .wallMessage {
     background-color: #aaa;
