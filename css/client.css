@@ -3,17 +3,13 @@ body {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-.clear {
-    clear: both;
-}
-
 .container {
     width: 600px;
     margin: 100px auto;
 }
 
 .notice {
-    font-size: 75%;
+    font-size: 60%;
 }
 
 .border {
@@ -119,7 +115,8 @@ body {
 .wallMessage {
     background-color: #aaa;
     margin: 5px 0;
-    width: 100%
+    width: 100%;
+    min-width: 560px;
 }
 
 #account div {

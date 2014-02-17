@@ -39,7 +39,6 @@
                         </select>
                         <label for="signup-city">City: </label><input id="signup-city" type="text" name="city" onChange="clearErrorBorder(this);" />
                         <label for="signup-country">Country: </label><input id="signup-country" type="text" name="country" onChange="clearErrorBorder(this);" />
-                        <div class="clear"></div>
                         <span id="sign-up-message" class="notice"></span><input class="submit-btn" type="submit" value="Sign up" />
                     </form>
                 </div>
@@ -64,7 +63,9 @@
                     </form>
                 </div>
                 <div id="wall">
-                    <h4 class="part-header">Da wall</h4><input type="submit" value="Reload" onClick="reloadWall();" />
+                    <h4 class="part-header">Da wall</h4>
+                    <input type="submit" value="Reload" onClick="reloadWall();" />
+                    <br/>
                     <div id="messageArea"></div>
                 </div>
             </div>
@@ -86,7 +87,9 @@
                         <input id="newPassword" type="password" name="newPassword" onChange="clearErrorBorder(this);" /><br/>
                         <label for="newPassword2">Retype: </label><br/>
                         <input id="newPassword2" type="password" name="newPassword2" onChange="clearErrorBorder(this);" /><br/>
-                        <input type="submit" value="Change password" /><span id="changePasswordMessage" class="notice"></span>
+                        <input type="submit" value="Change password" />
+                        <br/>
+                        <span id="changePasswordMessage" class="notice"></span>
                     </form>
                 </div>
                 <div>

@@ -192,6 +192,12 @@ submitChangePassword = function(formData) {
             formData.oldPassword.style.borderColor = "red";
         }
 
+        // Callback for removing the message after a couple of seconds
+        var callback = function() {
+            document.getElementById("changePasswordMessage").innerHTML = "";
+        };
+        setTimeout(callback, 8000);
+
     }
 };
 
