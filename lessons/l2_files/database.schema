@@ -1,0 +1,7 @@
+CREATE TABLE contact(
+id INT AUTO INCREMENT,
+firstname VARCHAR(30),
+familyname VARCHAR(30),
+phonenumber VARCHAR(30),
+PRIMARY KEY(firstname, familyname)
+);
