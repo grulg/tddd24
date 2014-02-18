@@ -1,0 +1,5 @@
+1. Several reasons. Less data usage, good on mobile phones and such. Off-load servers. Why bother stressed servers with checks we can do locally? Downside: The validation code gets split up on two different places, risk of doing same validation twice or even missing something.
+
+4. As we're always on the same page, the back/forward button would take us to e.g. your previously visited site. It is not the expected behaviour, you would probably like to cycle between the views that exist in the profileview. I think there are some kind of browser events, that you could listen to, to solve this problem? (tokens in the url?)
+
+5. As it is a single page app, reloading will cause the page to display its "standard" view, in our case profileview's home tab if you're logged in our welcomeview if you logged out.
