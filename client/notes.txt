@@ -2,4 +2,4 @@
 
 4. As we're always on the same page, the back/forward button would take us to e.g. your previously visited site. It is not the expected behaviour, you would probably like to cycle between the views that exist in the profileview. I think there are some kind of browser events, that you could listen to, to solve this problem? (tokens in the url?)
 
-5. As it is a single page app, reloading will cause the page to display its "standard" view, in our case profileview's home tab if you're logged in our welcomeview if you logged out.
+5. As it is a single page app, reloading will cause the page to display its "standard" view, in our case profileview's home tab if you're logged in our welcomeview if you logged out. It is kind of expected, but maybe not as "elegant" one might want (e.g. staying on the same tab). We get this behaviour because the browser refetches the document from the server (or caches).
