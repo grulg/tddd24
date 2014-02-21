@@ -1,54 +1,46 @@
-import sqlite3
-
-from flask import g
-
 __author__ = 'haeger'
 
-DATABASE = 'db/twidder.db'
-
-
-def db_connect():
-    return sqlite3.connect(DATABASE)
-
-
-def db_close():
-    db = getattr(g, 'db', None)
-    if db is not None:
-        db.close()
-
-
-def db_get():
-    db = getattr(g, 'db', None)
-    if db is None:
-        db = g.db = db_connect()
-    return db
-
-
-def db_init(app):
-    with app.app_context():
-        db = db_get()
-        with app.open_resource('db/schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+from twidder import get_database
 
 
 def db_query(query, args=(), one=False):
-    cur = db_get().execute(query, args)
+    cur = get_database().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
+
+
+def db_insert(query, args=(), one=False):
+    cur = get_database().execute(query, args)
+    get_database().commit()
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
 
 
 def db_get_user(email):
+    if email is None:
+        return None
     return db_query("SELECT * FROM user WHERE user.email = ?", (email,), True)
 
 
 def db_sign_in_user(email, token):
+    if email or token is None:
+        return None
     return db_query("UPDATE user SET token = ? WHERE email = ?", (token, email))
 
 
 def db_get_token(email):
+    if email is None:
+        return None
     return db_query("SELECT token FROM user WHERE email = ?", (email,), True)
+
+
+def db_sign_up(user_data):
+    for x in user_data:
+        if x is None:
+            return None
+    return db_insert("INSERT INTO user (first_name, last_name, city, country, gender, email, password) VALUES (?, ?, ?, ?, ?, ?, ?)", user_data, True)
 
 
 def db_get_all_tokens():
@@ -61,6 +53,3 @@ def db_get_all_tokens():
         tuples.__add__(x)
 
     return tuples
-
-
-
