@@ -6,10 +6,10 @@ import os
 import sqlite3
 
 from flask import Flask, jsonify, request, g
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, 'db/twidder.db'),
     DEBUG=True,
@@ -18,7 +18,6 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 app.config.from_envvar('TWIDDER_SETTINGS', silent=True)
-
 
 @app.route("/")
 def hello():
@@ -50,7 +49,7 @@ def sign_in():
 
     # Validate input
     # TODO Is there a more elegant way to get the password out of the tuple?
-    if user is not None and user[7] == password:
+    if user is not None and check_password_hash(user['password'], password):
         # Mark user as logged in by assigning token
         token = generate_token()
         db_sign_in_user(email, token)   # TODO Check return value if query is okay (should be)
@@ -66,9 +65,13 @@ def sign_up():
 
     :return: a json object containing success, message and data attributes
     """
+    if request.form['password'] == "":
+        return jsonify(success=False, message="Form data not complete.")
+
     # Ordering is crucial - must match database
     user_data = (request.form['firstname'], request.form['lastname'], request.form['city'],
-                 request.form['country'], request.form['gender'], request.form['email'], request.form['password'])
+                 request.form['country'], request.form['gender'], request.form['email'],
+                 generate_password_hash(request.form['password']))
 
     # Check input values
     for x in user_data:
@@ -80,17 +83,18 @@ def sign_up():
     if user is not None:
         return jsonify(success=False, message="User already exists.")
 
-    # TODO Need to hash password
-
-
     db_sign_up(user_data)   # TODO Check return value if query is okay (should be)
 
     return jsonify(success=True, message="Successfully created a new user.")
 
 
+def sign_out():
+    return 'word'
+
+
 def db_connect():
     rv = sqlite3.connect(app.config['DATABASE'])
-    # rv.row_factory = sqlite3.Row      # TODO Enable this
+    rv.row_factory = sqlite3.Row
     return rv
 
 

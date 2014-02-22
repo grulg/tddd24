@@ -48,8 +48,8 @@ def db_get_all_tokens():
     Returns all tokens in a tuple
     """
     result = db_query("SELECT token FROM user")
-    tuples = ()
+    tuples = []
     for x in result:
-        tuples.__add__(x)
+        tuples.append(x)
 
     return tuples
