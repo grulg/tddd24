@@ -1,5 +1,3 @@
-from werkzeug.testsuite.wrappers import request_demo_app
-
 __author__ = 'haeger'
 
 import string
@@ -20,6 +18,7 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 app.config.from_envvar('TWIDDER_SETTINGS', silent=True)
+
 
 @app.route("/")
 def hello():
@@ -132,9 +131,23 @@ def get_user_data_by_token():
 
 @app.route("/get_user_data_by_email", methods=['POST'])
 def get_user_data_by_email():
-    return 'bleh'
+    token = request.form['token']
+    user = db_get_user_by_token(token) if token != "" else None
+    if user is None:
+        return jsonify(success=False, message="You are not signed in.", data=None)
+
+    user = db_get_user(request.form['email'])
+    if user is None:
+        return jsonify(success=False, message="No such user.", data=None)
+
+    user_dict = to_dict(user)
+    data = {'success': True, 'message': 'User data retrieved.', 'data': user_dict}
+    return jsonify(data)
 
 
+def to_dict(user):
+    return {'firstname': user['first_name'], 'lastname': user['last_name'], 'city': user['city'],
+            'country': user['country'], 'gender': user['gender'], 'email': user['email']}
 
 
 def db_connect():

@@ -14,8 +14,8 @@ CREATE TABLE user(
 INSERT INTO user VALUES (
      0,
      'Alexander',
-     'Häger',
-     'Linköping',
+     'Haeger',
+     'Linkoping',
      'Sweden',
      'Male',
      'me@haeger.me',

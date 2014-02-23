@@ -201,6 +201,11 @@ class TwidderTestCase(unittest.TestCase):
         assert rv['success']
         assert "User data retrieved" in rv['message']
         assert rv['data']['firstname'] == 'Alexander'
+        assert rv['data']['lastname'] == 'Haeger'
+        assert rv['data']['city'] == 'Linkoping'
+        assert rv['data']['country'] == 'Sweden'
+        assert rv['data']['gender'] == 'Male'
+        assert rv['data']['email'] == 'me@haeger.me'
 
     def sign_up(self, firstname, lastname, city, country, gender, email, password):
         return json.loads(self.app.post('/sign_up', data=dict(firstname=firstname, lastname=lastname, city=city,
