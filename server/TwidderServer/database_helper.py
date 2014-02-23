@@ -24,10 +24,22 @@ def db_get_user(email):
     return db_query("SELECT * FROM user WHERE user.email = ?", (email,), True)
 
 
-def db_sign_in_user(email, token):
-    if email or token is None:
+def db_get_user_by_token(token):
+    if token is None:
         return None
-    return db_query("UPDATE user SET token = ? WHERE email = ?", (token, email))
+    return db_query("SELECT * FROM user WHERE token = ?", (token,), True)
+
+
+def db_sign_in_user(email, token):
+    if email is None or token is None:
+        return None
+    return db_insert("UPDATE user SET token = ? WHERE email = ?", (token, email))
+
+
+def db_sign_out_user(token):
+    if token is None:
+        return None
+    return db_insert("UPDATE user SET token = null WHERE token = ?", (token,))
 
 
 def db_get_token(email):
@@ -44,12 +56,8 @@ def db_sign_up(user_data):
 
 
 def db_get_all_tokens():
-    """
-    Returns all tokens in a tuple
-    """
-    result = db_query("SELECT token FROM user")
-    tuples = []
-    for x in result:
-        tuples.append(x)
+    return db_query("SELECT token FROM user")
 
-    return tuples
+
+def db_change_password(email, new_password):
+    return db_insert("UPDATE user SET password = ? WHERE email = ?", (new_password, email))

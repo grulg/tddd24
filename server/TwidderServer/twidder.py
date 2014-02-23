@@ -1,3 +1,5 @@
+from werkzeug.testsuite.wrappers import request_demo_app
+
 __author__ = 'haeger'
 
 import string
@@ -48,7 +50,6 @@ def sign_in():
     user = db_get_user(email)
 
     # Validate input
-    # TODO Is there a more elegant way to get the password out of the tuple?
     if user is not None and check_password_hash(user['password'], password):
         # Mark user as logged in by assigning token
         token = generate_token()
@@ -88,8 +89,52 @@ def sign_up():
     return jsonify(success=True, message="Successfully created a new user.")
 
 
+@app.route("/sign_out", methods=['POST'])
 def sign_out():
-    return 'word'
+    token = request.form['token']
+    all_tokens_listed = db_get_all_tokens()
+
+    all_tokens = list()
+    for x in all_tokens_listed:
+        all_tokens.append(x[0])
+
+    if token == '' or token not in all_tokens:
+        return jsonify(success=False, message="You are not signed in.")
+
+    db_sign_out_user(token)
+    return jsonify(success=True, message="Successfully signed out.")
+
+
+@app.route("/change_password", methods=['POST'])
+def change_password():
+    token = request.form['token']
+    user = db_get_user_by_token(token) if token != "" else None
+    if user is None:
+        return jsonify(success=False, message="You are not logged in.")
+
+    old_password = request.form['old_password']
+    if not check_password_hash(user['password'], old_password):
+        return jsonify(success=False, message="Wrong password.")
+
+    new_password = request.form['new_password']
+    if new_password == "":
+        return jsonify(success=False, message="New password sucks.")
+
+    # All parameters are okay, change that password!
+    db_change_password(user['email'], generate_password_hash(new_password))
+    return jsonify(success=True, message="Password changed.")
+
+
+@app.route("/get_user_data_by_token", methods=['POST'])
+def get_user_data_by_token():
+    return 'bleh'
+
+
+@app.route("/get_user_data_by_email", methods=['POST'])
+def get_user_data_by_email():
+    return 'bleh'
+
+
 
 
 def db_connect():
