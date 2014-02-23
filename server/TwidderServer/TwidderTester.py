@@ -207,6 +207,23 @@ class TwidderTestCase(unittest.TestCase):
         assert rv['data']['gender'] == 'Male'
         assert rv['data']['email'] == 'me@haeger.me'
 
+    def test_get_user_data_by_token(self):
+        # Implemented with the same function as get_user_data_by_email(),
+        # so no extensive tests here
+
+        # Get token
+        data = self.sign_in('me@haeger.me', 'q')
+        assert data['success']
+        token = data['data']
+
+        # Invalid token
+        rv = self.get_user_data_by_token("Meh")
+        assert not rv['success']
+
+        # Valid token
+        rv = self.get_user_data_by_token(token)
+        assert rv['success']
+
     def sign_up(self, firstname, lastname, city, country, gender, email, password):
         return json.loads(self.app.post('/sign_up', data=dict(firstname=firstname, lastname=lastname, city=city,
                                                               country=country, gender=gender, email=email,

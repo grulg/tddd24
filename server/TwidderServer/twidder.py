@@ -126,17 +126,24 @@ def change_password():
 
 @app.route("/get_user_data_by_token", methods=['POST'])
 def get_user_data_by_token():
-    return 'bleh'
+    token = request.form['token']
+    user = db_get_user_by_token(token)
+    if user is None:
+        return get_user_data(token, '')
+    return get_user_data(token, user['email'])
 
 
 @app.route("/get_user_data_by_email", methods=['POST'])
 def get_user_data_by_email():
-    token = request.form['token']
+    return get_user_data(request.form['token'], request.form['email'])
+
+
+def get_user_data(token, email):
     user = db_get_user_by_token(token) if token != "" else None
     if user is None:
         return jsonify(success=False, message="You are not signed in.", data=None)
 
-    user = db_get_user(request.form['email'])
+    user = db_get_user(email)
     if user is None:
         return jsonify(success=False, message="No such user.", data=None)
 
