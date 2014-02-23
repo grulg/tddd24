@@ -157,6 +157,20 @@ def to_dict(user):
             'country': user['country'], 'gender': user['gender'], 'email': user['email']}
 
 
+@app.route("/post_message", methods=['POST'])
+def post_message():
+    writer = db_get_user_by_token(request.form['token'])
+    if writer is None:
+        return jsonify(success=False, message="You are not signed in.")
+
+    reciever = db_get_user(request.form['email']) if request.form['email'] != writer['email'] else writer
+    if reciever is None:
+        return jsonify(success=False, message="No such user.")
+
+    db_post_message(request.form['message'], reciever['id'], writer['id'])
+    return jsonify(success=True, message="Message posted")
+
+
 def db_connect():
     rv = sqlite3.connect(app.config['DATABASE'])
     rv.row_factory = sqlite3.Row

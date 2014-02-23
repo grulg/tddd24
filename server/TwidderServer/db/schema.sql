@@ -11,6 +11,16 @@ CREATE TABLE user(
 	token VARCHAR(30)
 );
 
+DROP TABLE IF EXISTS message;
+CREATE TABLE message(
+    id INTEGER PRIMARY KEY,
+    reciever INT,
+    writer INT,
+    content VARCHAR(140),
+    FOREIGN KEY(reciever) REFERENCES user(id),
+    FOREIGN KEY(writer) REFERENCES user(id)
+);
+
 INSERT INTO user VALUES (
      0,
      'Alexander',

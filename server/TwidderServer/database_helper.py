@@ -61,3 +61,7 @@ def db_get_all_tokens():
 
 def db_change_password(email, new_password):
     return db_insert("UPDATE user SET password = ? WHERE email = ?", (new_password, email))
+
+
+def db_post_message(message, reciever_id, writer_id):
+    return db_insert("INSERT INTO message (reciever, writer, content) VALUES (?, ?, ?)", (reciever_id, writer_id, message))
