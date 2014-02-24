@@ -65,3 +65,12 @@ def db_change_password(email, new_password):
 
 def db_post_message(message, reciever_id, writer_id):
     return db_insert("INSERT INTO message (reciever, writer, content) VALUES (?, ?, ?)", (reciever_id, writer_id, message))
+
+
+def db_get_user_messages(reciever_id):
+    data = db_query("SELECT DISTINCT u.email, m.content FROM message m, user u WHERE m.reciever = ? AND m.reciever = u.id ORDER BY m.id DESC", (reciever_id,))
+    result = list()
+    for row in data:
+        result.append({'writer': row['email'], 'content': row['content']})
+
+    return result

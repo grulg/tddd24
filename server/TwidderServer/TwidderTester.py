@@ -258,6 +258,44 @@ class TwidderTestCase(unittest.TestCase):
         assert rv['success']
         assert "Message posted" in rv['message']
 
+    def test_get_user_messages_by_email(self):
+        # Get token
+        data = self.sign_in('me@haeger.me', 'q')
+        assert data['success']
+        token = data['data']
+
+        # Bad token
+        rv = self.get_user_messages_by_email('', 'me@haeger.me')
+        assert not rv['success']
+        assert 'You are not signed in' in rv['message']
+        assert rv['data'] is None
+
+        # Bad email
+        rv = self.get_user_messages_by_email(token, '')
+        assert not rv['success']
+        assert 'No such user' in rv['message']
+        assert rv['data'] is None
+
+        # Valid
+        rv = self.get_user_messages_by_email(token, 'me@haeger.me')
+        assert rv['success']
+        assert 'User messages retrieved' in rv['message']
+        assert rv['data'] is not None
+
+        # Post a message so something can be retrieved
+        rv = self.post_message(token, 'Hey me!', 'me@haeger.me')
+        assert rv['success']
+        rv = self.post_message(token, 'Whaddup?', 'me@haeger.me')
+        assert rv['success']
+        rv = self.get_user_messages_by_email(token, 'me@haeger.me')
+        assert rv['success']
+        assert 'User messages retrieved' in rv['message']
+        assert rv['data'][1]['writer'] == 'me@haeger.me'
+        assert rv['data'][1]['content'] == 'Hey me!'
+        assert rv['data'][0]['writer'] == 'me@haeger.me'
+        assert rv['data'][0]['content'] == 'Whaddup?'
+
+
     def sign_up(self, firstname, lastname, city, country, gender, email, password):
         return json.loads(self.app.post('/sign_up', data=dict(firstname=firstname, lastname=lastname, city=city,
                                                               country=country, gender=gender, email=email,
@@ -282,6 +320,9 @@ class TwidderTestCase(unittest.TestCase):
     def post_message(self, token, message, email):
         return json.loads(self.app.post('/post_message', data=dict(token=token, message=message,
                                                                    email=email)).data)
+
+    def get_user_messages_by_email(self, token, email):
+        return json.loads(self.app.post('/get_user_messages_by_email', data=dict(token=token, email=email)).data)
 
 if __name__ == '__main__':
     unittest.main()

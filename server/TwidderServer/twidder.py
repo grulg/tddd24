@@ -168,7 +168,22 @@ def post_message():
         return jsonify(success=False, message="No such user.")
 
     db_post_message(request.form['message'], reciever['id'], writer['id'])
-    return jsonify(success=True, message="Message posted")
+    return jsonify(success=True, message="Message posted.")
+
+
+@app.route("/get_user_messages_by_email", methods=['POST'])
+def get_user_messages_by_email():
+    user = db_get_user_by_token(request.form['token'])
+    if user is None:
+        return jsonify(success=False, message="You are not signed in.", data=None)
+
+    reciever = db_get_user(request.form['email']) if user['email'] != request.form['email'] else user
+    if reciever is None:
+        return jsonify(success=False, message="No such user.", data=None)
+
+    messages = db_get_user_messages(reciever['id'])
+    result = {'success': True, 'message': 'User messages retrieved', 'data': messages}
+    return jsonify(result)
 
 
 def db_connect():
