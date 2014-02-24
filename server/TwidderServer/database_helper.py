@@ -68,7 +68,7 @@ def db_post_message(message, reciever_id, writer_id):
 
 
 def db_get_user_messages(reciever_id):
-    data = db_query("SELECT DISTINCT u.email, m.content FROM message m, user u WHERE m.reciever = ? AND m.reciever = u.id ORDER BY m.id DESC", (reciever_id,))
+    data = db_query("SELECT DISTINCT u.email, m.content FROM message m, user u WHERE m.reciever = ? AND m.writer = u.id ORDER BY m.id DESC", (reciever_id,))
     result = list()
     for row in data:
         result.append({'writer': row['email'], 'content': row['content']})

@@ -312,6 +312,34 @@ class TwidderTestCase(unittest.TestCase):
         rv = self.get_user_data_by_token(token)
         assert rv['success']
 
+    def test_final_test(self):
+        rv = self.sign_up('John', 'Doe', 'New York', 'USA', 'Male', 'john@example.com', 'q')
+        assert rv['success']
+        rv = self.sign_up('Jane', 'Doe', 'New York', 'USA', 'Female', 'jane@example.com', 'a')
+        assert rv['success']
+        rv = self.sign_in('john@example.com', 'q')
+        assert rv['success']
+        token = rv['data']
+        rv = self.post_message(token, 'Hey Jane!', 'jane@example.com')
+        assert rv['success']
+        rv = self.get_user_messages_by_email(token, 'jane@example.com')
+        assert rv['success']
+        assert rv['data'][0]['writer'] == 'john@example.com'
+        assert rv['data'][0]['content'] == 'Hey Jane!'
+        rv = self.sign_out(token)
+        assert rv['success']
+        rv = self.sign_in('jane@example.com', 'a')
+        assert rv['success']
+        token = rv['data']
+        rv = self.post_message(token, 'Hey me!', 'jane@example.com')
+        assert rv['success']
+        rv = self.get_user_messages_by_token(token)
+        assert rv['success']
+        assert rv['data'][0]['writer'] == 'jane@example.com'
+        assert rv['data'][0]['content'] == 'Hey me!'
+        rv = self.sign_out(token)
+        assert rv['success']
+
     def sign_up(self, firstname, lastname, city, country, gender, email, password):
         return json.loads(self.app.post('/sign_up', data=dict(firstname=firstname, lastname=lastname, city=city,
                                                               country=country, gender=gender, email=email,
