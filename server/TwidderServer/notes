@@ -1,0 +1,6 @@
+Answers for questions in lab 2
+1. 
+
+4. A DBMS is system that takes care of reading and writing (probably in parallell) to a database, often with utilities for recovery and is located on its own separate server (software wise, maybe not physically on a separate server). SQLite is more light weight than other databases, but has some restrictions (like only one writer at a time), as utilizes a single database file to store everything.
+
+5. No. It takes an awful lot of time, is prone to human errors and seems to me like a very out dated method of testing. Maybe if you automized the process somewhat. But you get a good understanding of HTTP-requests while using it.
