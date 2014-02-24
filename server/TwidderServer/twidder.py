@@ -171,20 +171,33 @@ def post_message():
     return jsonify(success=True, message="Message posted.")
 
 
+@app.route("/get_user_messages_by_token", methods=['POST'])
+def get_user_messages_by_token():
+    token = request.form['token']
+    user = db_get_user_by_token(token)
+    if user is None:
+        return get_user_messages(token, '')
+
+    return get_user_messages(token, user['email'])
+
+
 @app.route("/get_user_messages_by_email", methods=['POST'])
 def get_user_messages_by_email():
-    user = db_get_user_by_token(request.form['token'])
+    return get_user_messages(request.form['token'], request.form['email'])
+
+
+def get_user_messages(token, email):
+    user = db_get_user_by_token(token)
     if user is None:
         return jsonify(success=False, message="You are not signed in.", data=None)
 
-    reciever = db_get_user(request.form['email']) if user['email'] != request.form['email'] else user
+    reciever = db_get_user(email) if user['email'] != email else user
     if reciever is None:
         return jsonify(success=False, message="No such user.", data=None)
 
     messages = db_get_user_messages(reciever['id'])
     result = {'success': True, 'message': 'User messages retrieved', 'data': messages}
     return jsonify(result)
-
 
 def db_connect():
     rv = sqlite3.connect(app.config['DATABASE'])

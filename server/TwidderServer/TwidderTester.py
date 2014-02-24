@@ -290,11 +290,27 @@ class TwidderTestCase(unittest.TestCase):
         rv = self.get_user_messages_by_email(token, 'me@haeger.me')
         assert rv['success']
         assert 'User messages retrieved' in rv['message']
-        assert rv['data'][1]['writer'] == 'me@haeger.me'
-        assert rv['data'][1]['content'] == 'Hey me!'
         assert rv['data'][0]['writer'] == 'me@haeger.me'
         assert rv['data'][0]['content'] == 'Whaddup?'
+        assert rv['data'][1]['writer'] == 'me@haeger.me'
+        assert rv['data'][1]['content'] == 'Hey me!'
 
+    def test_get_user_messages_by_token(self):
+        # Based on the same methods as get_user_data_by_email,
+        # so no thorough testing here
+
+        # Get token
+        data = self.sign_in('me@haeger.me', 'q')
+        assert data['success']
+        token = data['data']
+
+        # Bad token
+        rv = self.get_user_data_by_token('')
+        assert not rv['success']
+
+        # Valid
+        rv = self.get_user_data_by_token(token)
+        assert rv['success']
 
     def sign_up(self, firstname, lastname, city, country, gender, email, password):
         return json.loads(self.app.post('/sign_up', data=dict(firstname=firstname, lastname=lastname, city=city,
@@ -323,6 +339,9 @@ class TwidderTestCase(unittest.TestCase):
 
     def get_user_messages_by_email(self, token, email):
         return json.loads(self.app.post('/get_user_messages_by_email', data=dict(token=token, email=email)).data)
+
+    def get_user_messages_by_token(self, token):
+        return json.loads(self.app.post('/get_user_messages_by_token', data=dict(token=token)).data)
 
 if __name__ == '__main__':
     unittest.main()
