@@ -35,6 +35,7 @@ body {
 
 .column .submit-btn {
     float: right;
+    width: 60px;
 }
 
 .menu li {
@@ -78,7 +79,7 @@ body {
 .column label{
     display: inline-block;
     float: left;
-    width: 95px;
+    width: 85px;
     text-align: left;
 }
 
@@ -86,12 +87,13 @@ body {
     display: inline-block;
     float: left;
     margin: 1px 0;
+    width: 142px;
 }
 
 .column select {
     display: inline-block;
     float: left;
-    width: 142px;
+    width: 146px;
     margin: 1px 0;
 }
 
