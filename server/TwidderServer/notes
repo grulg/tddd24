@@ -1,5 +1,5 @@
 Answers for questions in lab 2
-1. 
+1. Storing passwords in plain text will enable hackers to get ahold of your users' passwords, which they can use to gain access on your site and probably other sites as well (as users often have the same password to different sites). By hashing and adding a salt, hackers won't be able to gain access to the site and won't be able to see the orginal phrase either(if they don't try and break it, which should take a while if you have hashed it properly).
 
 4. A DBMS is system that takes care of reading and writing (probably in parallell) to a database, often with utilities for recovery and is located on its own separate server (software wise, maybe not physically on a separate server). SQLite is more light weight than other databases, but has some restrictions (like only one writer at a time), as utilizes a single database file to store everything.
 
