@@ -1,2 +1,4 @@
 .idea
 tddd24.iml
+*.pyc
+*.db
