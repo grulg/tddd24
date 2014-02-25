@@ -1,6 +1,7 @@
+from TwidderServer import twidder
+
 __author__ = 'haeger'
 import os
-import twidder
 import unittest
 import tempfile
 

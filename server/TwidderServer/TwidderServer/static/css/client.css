@@ -1,0 +1,126 @@
+body {
+    background-color: #eee;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.container {
+    width: 600px;
+    margin: 100px auto;
+}
+
+.notice {
+    font-size: 60%;
+}
+
+.border {
+    border: 1px solid black;
+}
+
+.column {
+    float: left;
+    height: 400px;
+    overflow: hidden;
+}
+
+.part-header {
+    margin: 3px;
+}
+
+.column-part {
+    width: 237px;
+    padding: 5px;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+
+.column .submit-btn {
+    float: right;
+    width: 60px;
+}
+
+.menu li {
+    display: inline;
+    padding: 10px;
+    background-color: #A5ABF2;
+}
+
+.menu :hover {
+    background-color: #333FD4;
+}
+
+
+#logo {
+    width: 338px;
+    height: 398px;
+    margin-right: 10px;
+    padding: 0;
+}
+
+#login {
+    height: 30%;
+}
+
+#signup {
+    height: 61.5%;
+}
+
+#home {
+    display: block;
+}
+
+#browse {
+    display: none;
+}
+
+#account {
+    display: none;
+}
+
+.column label{
+    display: inline-block;
+    float: left;
+    width: 85px;
+    text-align: left;
+}
+
+.column input {
+    display: inline-block;
+    float: left;
+    margin: 1px 0;
+    width: 142px;
+}
+
+.column select {
+    display: inline-block;
+    float: left;
+    width: 146px;
+    margin: 1px 0;
+}
+
+#home div {
+    float: left;
+    padding: 10px;
+}
+
+#wall h2 {
+    margin: 0;
+}
+
+#messageArea > :nth-child(even) {
+    background-color: #A5ABF2;
+}
+
+#messageArea > :nth-child(odd) {
+    background-color: #7d82af;
+}
+
+.wallMessage {
+    background-color: #aaa;
+    margin: 5px 0;
+    width: 100%;
+    min-width: 560px;
+}
+
+#account div {
+    float: left;
+}

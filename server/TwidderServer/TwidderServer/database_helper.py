@@ -1,6 +1,6 @@
 __author__ = 'haeger'
 
-from twidder import get_database
+from TwidderServer.twidder import get_database
 
 
 def db_query(query, args=(), one=False):
