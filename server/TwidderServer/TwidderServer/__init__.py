@@ -5,7 +5,7 @@ import random
 import os
 import sqlite3
 
-from flask import Flask, jsonify, request, g
+from flask import Flask, jsonify, request, g, json
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -49,6 +49,21 @@ def image():
     return app.send_static_file('images/wimage.png')
 
 # End of stuff that should be done better...
+
+
+@app.route("/socket")
+def websocket_app():
+    if request.environ.get('wsgi.websocket'):
+        ws = request.environ['wsgi.websocket']
+        try:
+            while True:
+                message = json.loads(ws.receive())
+                # get_user_message_response returns a Response-thingy from jsonify(), so we have to choose just the data
+                package = get_user_messages_response(message['token'], message['email']).data
+                ws.send(package)
+        except TypeError:
+            print "Socket died."
+    return ""
 
 
 def generate_token():
@@ -202,17 +217,17 @@ def get_user_messages_by_token():
     token = request.form['token']
     user = db_get_user_by_token(token)
     if user is None:
-        return get_user_messages(token, '')
+        return get_user_messages_response(token, '')
 
-    return get_user_messages(token, user['email'])
+    return get_user_messages_response(token, user['email'])
 
 
 @app.route("/get_user_messages_by_email", methods=['POST'])
 def get_user_messages_by_email():
-    return get_user_messages(request.form['token'], request.form['email'])
+    return get_user_messages_response(request.form['token'], request.form['email'])
 
 
-def get_user_messages(token, email):
+def get_user_messages_response(token, email):
     user = db_get_user_by_token(token)
     if user is None:
         return jsonify(success=False, message="You are not signed in.", data=None)
@@ -260,6 +275,13 @@ def initialize_database():
 
 from TwidderServer.database_helper import *
 
-if __name__ == "__main__":
-    initialize_database()
-    app.run(debug=True)
+# def the_app(environ, start_response):
+#     path = environ['PATH_INFO']
+#     if path == '/socket':
+#         return websocket_app(environ['wsgi.socket'], start_response)
+#     else:
+#         return app(environ, start_response)
+
+#if __name__ == "__main__":
+ #   initialize_database()
+ #   app.run(debug=True)

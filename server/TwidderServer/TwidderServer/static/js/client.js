@@ -1,3 +1,4 @@
+var ws;
 window.onload = function() {
 
     if(localStorage.token != null) {
@@ -16,12 +17,26 @@ window.onload = function() {
         displayView();
     }
 
+    ws = new WebSocket("ws://" + document.domain + ":5000/socket");
+    ws.onmessage = function(msg) {
+        var result = JSON.parse(msg.data);
+        if(result.success) {
+            generateWall(result.data);
+        } else {
+            alert("WebSocket is biting the dirt.");
+        }
+    }
+
     // TODO Find more elegant solution for the "default border"
     if(document.getElementById("signup-email") != null) {
         defaultBorder = document.signUpForm.elements[0].style.border;
     } else if(document.getElementById("oldPassword") != null) {
         defaultBorder = document.getElementById("oldPassword").style.border;
     }
+};
+
+window.onbeforeunload = function(event) {
+    ws.close();
 };
 
 /**
@@ -32,7 +47,14 @@ displayView = function(userData) {
     if(localStorage.token != null) {
         document.getElementById("view").innerHTML = document.getElementById("profileview").innerHTML;
         populateBio(userData);
-        reloadWall(userData.email);
+        //reloadWall(userData.email);
+        if("WebSocket" in window) {
+            var credentials = {
+                token: localStorage.token,
+                email: localStorage.currentUserView
+            };
+            ws.send(JSON.stringify(credentials));
+        }
     } else {
         document.getElementById("view").innerHTML = document.getElementById("welcomeview").innerHTML;
     }
@@ -314,7 +336,7 @@ submitPostMessage = function(formData) {
             var result = JSON.parse(xmlhttp.responseText);
             if(result.success) {
                 formData.message.value = "";
-                reloadWall(localStorage.currentUserView);
+                //reloadWall(localStorage.currentUserView);                
             }
             document.getElementById("postMessageResultMessage").innerHTML = result.message;
 
@@ -348,10 +370,7 @@ reloadWall = function(email) {
         if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
             var result = JSON.parse(xmlhttp.responseText);
             if(result.success) {
-                document.getElementById("messageArea").innerHTML = result.data.length > 0 ? "" : "<h2>No messages yet... ='(</h2>";
-                for(i = 0 ; i < result.data.length ; i++) {
-                    document.getElementById("messageArea").innerHTML += generateMessage(result.data[i]);
-                }
+                generateWall(result.data);
             } else {
                 alert("Couldn't reload wall.");
             }
@@ -368,6 +387,16 @@ reloadWall = function(email) {
         xmlhttp.send("token=" + localStorage.token + "&email=" + email);
     }
 };
+
+/**
+ * Generates the wall based on the json data returned from the server.
+ */
+generateWall = function(data) {
+    document.getElementById("messageArea").innerHTML = data.length > 0 ? "" : "<h2>No messages yet... ='(</h2>";
+    for(i = 0 ; i < data.length ; i++) {
+        document.getElementById("messageArea").innerHTML += generateMessage(data[i]);
+    }
+}
 
 /**
  * Generate a message for the stream with given data.
