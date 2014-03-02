@@ -19,6 +19,7 @@ app.config.update(dict(
     PASSWORD='default'
 ))
 app.config.from_envvar('TWIDDER_SETTINGS', silent=True)
+#app.debug = True
 
 
 @app.route("/")
@@ -63,6 +64,21 @@ def websocket_app():
                 ws.send(package)
         except TypeError:
             print "Socket died."
+    return ""
+
+
+@app.route("/push_message")
+def push_message():
+    if request.environ.get('wsgi.websocket'):
+        ws = request.environ['wsgi.websocket']
+        data = json.loads(ws.receive())
+        response = post_message_to_db(data['token'], data['email'], data['message'])
+        if not json.loads(response.data)['success']:
+            ws.send(response.data)
+        else:
+            response = get_user_messages_response(data['token'], data['email'])
+            ws.send(response.data)
+            ws.close()
     return ""
 
 
@@ -200,15 +216,19 @@ def to_dict(user):
 
 @app.route("/post_message", methods=['POST'])
 def post_message():
-    writer = db_get_user_by_token(request.form['token'])
+    return post_message_to_db(request.form['token'], request.form['email'], request.form['message'])
+
+
+def post_message_to_db(token, email, message):
+    writer = db_get_user_by_token(token)
     if writer is None:
         return jsonify(success=False, message="You are not signed in.")
 
-    reciever = db_get_user(request.form['email']) if request.form['email'] != writer['email'] else writer
+    reciever = db_get_user(email) if email != writer['email'] else writer
     if reciever is None:
         return jsonify(success=False, message="No such user.")
 
-    db_post_message(request.form['message'], reciever['id'], writer['id'])
+    db_post_message(message, reciever['id'], writer['id'])
     return jsonify(success=True, message="Message posted.")
 
 

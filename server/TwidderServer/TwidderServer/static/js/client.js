@@ -1,4 +1,4 @@
-var ws;
+// var ws;
 window.onload = function() {
 
     if(localStorage.token != null) {
@@ -17,26 +17,12 @@ window.onload = function() {
         displayView();
     }
 
-    ws = new WebSocket("ws://" + document.domain + ":5000/socket");
-    ws.onmessage = function(msg) {
-        var result = JSON.parse(msg.data);
-        if(result.success) {
-            generateWall(result.data);
-        } else {
-            alert("WebSocket is biting the dirt.");
-        }
-    }
-
     // TODO Find more elegant solution for the "default border"
     if(document.getElementById("signup-email") != null) {
         defaultBorder = document.signUpForm.elements[0].style.border;
     } else if(document.getElementById("oldPassword") != null) {
         defaultBorder = document.getElementById("oldPassword").style.border;
     }
-};
-
-window.onbeforeunload = function(event) {
-    ws.close();
 };
 
 /**
@@ -47,14 +33,8 @@ displayView = function(userData) {
     if(localStorage.token != null) {
         document.getElementById("view").innerHTML = document.getElementById("profileview").innerHTML;
         populateBio(userData);
-        //reloadWall(userData.email);
-        if("WebSocket" in window) {
-            var credentials = {
-                token: localStorage.token,
-                email: localStorage.currentUserView
-            };
-            ws.send(JSON.stringify(credentials));
-        }
+        reloadWall(userData.email);
+        // ws = new WebSocket("ws://" + document.domain + ":5000/push_message");
     } else {
         document.getElementById("view").innerHTML = document.getElementById("welcomeview").innerHTML;
     }
@@ -329,33 +309,34 @@ populateBio = function(userData) {
  */
 submitPostMessage = function(formData) {
 
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.onreadystatechange = function() {
-        if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            
-            var result = JSON.parse(xmlhttp.responseText);
-            if(result.success) {
-                formData.message.value = "";
-                //reloadWall(localStorage.currentUserView);                
-            }
-            document.getElementById("postMessageResultMessage").innerHTML = result.message;
+    if("WebSocket" in window) {
+        var credentials = {
+            token: localStorage.token,
+            email: localStorage.currentUserView,
+            message: formData.message.value
+        };
+        
+        ws = new WebSocket("ws://" + document.domain + ":5000/push_message");
 
-            // Callback for removing the message after a couple of seconds
-            var callback = function() {
-                document.getElementById("postMessageResultMessage").innerHTML = "";
-            };
-            setTimeout(callback, 8000);
+        ws.onopen = function(event) {
+            ws.send(JSON.stringify(credentials));
         }
-    };
-    xmlhttp.open("POST", "/post_message", true);
-    xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-    xmlhttp.send("token=" + localStorage.token + "&message=" + formData.message.value + "&email=" + localStorage.currentUserView);
 
-    //if(localStorage.currentUserView === undefined) {
-    //    result = serverstub.postMessage(localStorage.token, formData.message.value, serverstub.getUserDataByToken(localStorage.token));
-    //} else {
-    //    result = serverstub.postMessage(localStorage.token, formData.message.value, localStorage.currentUserView);
-    //}
+        ws.onmessage = function(msg) {
+            var result = JSON.parse(msg.data);
+            if(result.success) {
+
+                formData.message.value = "";
+                generateWall(result.data);
+
+            } else {
+                alert("Couldn't post message.");
+            }
+            ws.close();
+        }
+    } else {
+        alert("Websockets not supported, so this ain't gonna work!");
+    }
 };
 
 /**
@@ -380,10 +361,8 @@ reloadWall = function(email) {
     xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 
     if(email === undefined) {
-        //result = serverstub.getUserMessagesByEmail(localStorage.token, localStorage.currentUserView);
         xmlhttp.send("token=" + localStorage.token + "&email=" + localStorage.currentUserView);
     } else {
-        //result = serverstub.getUserMessagesByEmail(localStorage.token, email);
         xmlhttp.send("token=" + localStorage.token + "&email=" + email);
     }
 };
