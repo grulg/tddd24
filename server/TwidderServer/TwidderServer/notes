@@ -4,3 +4,25 @@ Answers for questions in lab 2
 4. A DBMS is system that takes care of reading and writing (probably in parallell) to a database, often with utilities for recovery and is located on its own separate server (software wise, maybe not physically on a separate server). SQLite is more light weight than other databases, but has some restrictions (like only one writer at a time), as utilizes a single database file to store everything.
 
 5. No. It takes an awful lot of time, is prone to human errors and seems to me like a very out dated method of testing. Maybe if you automized the process somewhat. But you get a good understanding of HTTP-requests while using it.
+
+
+Answers for lab 3
+1. XML  is also used as another widely used data exchange format. please have a comparison
+between  the  two  and  pinpoint  the  differences  and similarities.  Would  you still  use JSON  over
+XML or not?
+
+For most applications where only data has to be sent I would probably choose JSON over XML, as it's less "wordy" and works nicely with JavaScript. Though, if I was to layout something XML would be handier.
+
+
+
+4. What does web application deployment mean? What  pieces of  information  do  you  think a web
+server needs to run a web application?
+
+Configuring your server for actual use publicly. You would most probably, among other things, move to public server,  disable debug mode (or other verbose error messages that could endanger system security), change to correct database 
+
+
+
+5. Please mention and explain three real world functionalities which require two way client­server communication to be implemented. Is it possible to implement them without two way communication? how?
+
+Real-time applications (stocks, multiplayer games, chat). Yes, by polling the server regularly.
+
