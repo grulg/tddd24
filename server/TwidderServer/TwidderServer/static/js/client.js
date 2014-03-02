@@ -64,7 +64,7 @@ submitLogin = function(formData) {
                     xmlhttp2.setRequestHeader("Content-type","application/x-www-form-urlencoded");
                     xmlhttp2.send("token=" + localStorage.token);
 
-                } else {
+                } else {                    
                     document.getElementById("sign-in-message").innerHTML = result.message;
                     formData.signInEmail.style.borderColor = "red"
                 }    

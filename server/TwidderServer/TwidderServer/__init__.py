@@ -5,7 +5,7 @@ import random
 import os
 import sqlite3
 
-from flask import Flask, jsonify, request, g, json
+from flask import Flask, jsonify, request, g, json, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -24,32 +24,7 @@ app.config.from_envvar('TWIDDER_SETTINGS', silent=True)
 
 @app.route("/")
 def hello():
-    return app.send_static_file('client.html')
-
-
-# The following methods can hopefully be removed at some point...
-
-
-@app.route("/js/client.js")
-def js():
-    return app.send_static_file('js/client.js')
-
-
-@app.route("/css/client.css")
-def css():
-    return app.send_static_file('css/client.css')
-
-
-@app.route("/js/serverstub.js")
-def serverstub():
-    return app.send_static_file('js/serverstub.js')
-
-
-@app.route("/images/wimage.png")
-def image():
-    return app.send_static_file('images/wimage.png')
-
-# End of stuff that should be done better...
+    return render_template('client.html')
 
 
 @app.route("/socket")
@@ -109,7 +84,7 @@ def sign_in():
     if user is not None and check_password_hash(user['password'], password):
         # Mark user as logged in by assigning token
         token = generate_token()
-        db_sign_in_user(email, token)   # TODO Check return value if query is okay (should be)
+        db_sign_in_user(email, token)
         return jsonify(success=True, message="Successfully signed in.", data=token)
 
     return jsonify(success=False, message="Wrong username or password.", data=None)
@@ -140,7 +115,7 @@ def sign_up():
     if user is not None:
         return jsonify(success=False, message="User already exists.")
 
-    db_sign_up(user_data)   # TODO Check return value if query is okay (should be)
+    db_sign_up(user_data)
 
     return jsonify(success=True, message="Successfully created a new user.")
 
@@ -294,14 +269,3 @@ def initialize_database():
         db.commit()
 
 from TwidderServer.database_helper import *
-
-# def the_app(environ, start_response):
-#     path = environ['PATH_INFO']
-#     if path == '/socket':
-#         return websocket_app(environ['wsgi.socket'], start_response)
-#     else:
-#         return app(environ, start_response)
-
-#if __name__ == "__main__":
- #   initialize_database()
- #   app.run(debug=True)
