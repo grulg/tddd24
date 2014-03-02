@@ -6,8 +6,8 @@ window.onload = function() {
         xmlhttp.onreadystatechange = function() {
             if(xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 var userData = JSON.parse(xmlhttp.responseText);
-                displayView(userData);
-                localStorage.currentUserView = userData.email;
+                displayView(userData.data);
+                localStorage.currentUserView = userData.data.email;
             }
         };
         xmlhttp.open("POST", "/get_user_data_by_token", true);
@@ -34,7 +34,6 @@ displayView = function(userData) {
         document.getElementById("view").innerHTML = document.getElementById("profileview").innerHTML;
         populateBio(userData);
         reloadWall(userData.email);
-        // ws = new WebSocket("ws://" + document.domain + ":5000/push_message");
     } else {
         document.getElementById("view").innerHTML = document.getElementById("welcomeview").innerHTML;
     }
