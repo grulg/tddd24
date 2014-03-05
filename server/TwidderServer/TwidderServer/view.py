@@ -14,21 +14,6 @@ def hello():
     return render_template('client.html')
 
 
-@app.route("/socket")
-def websocket_app():
-    if request.environ.get('wsgi.websocket'):
-        ws = request.environ['wsgi.websocket']
-        try:
-            while True:
-                message = json.loads(ws.receive())
-                # get_user_message_response returns a Response-thingy from jsonify(), so we have to choose just the data
-                package = get_user_messages_response(message['token'], message['email']).data
-                ws.send(package)
-        except TypeError:
-            print "Socket died."
-    return ""
-
-
 @app.route("/push_message")
 def push_message():
     if request.environ.get('wsgi.websocket'):
