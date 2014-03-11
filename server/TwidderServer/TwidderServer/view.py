@@ -4,9 +4,13 @@ import string
 import random
 
 from flask import jsonify, request, json, render_template
+from geventwebsocket import WebSocketError
 from werkzeug.security import generate_password_hash, check_password_hash
 from TwidderServer import app
 from TwidderServer.database_helper import *
+
+# For active websockets
+socket_list = dict()
 
 
 @app.route("/")
@@ -17,15 +21,41 @@ def hello():
 @app.route("/push_message")
 def push_message():
     if request.environ.get('wsgi.websocket'):
+        # New socket, register in list
         ws = request.environ['wsgi.websocket']
         data = json.loads(ws.receive())
-        response = post_message_to_db(data['token'], data['email'], data['message'])
-        if not json.loads(response.data)['success']:  # Not so beautiful, but didn't want to change
-            ws.send(response.data)                    # post_message_to_db() implementation.
-        else:
-            response = get_user_messages_response(data['token'], data['email'])
-            ws.send(response.data)
-            ws.close()
+        socket_list[data['email']] = ws
+
+        print "New socket connection: " + data['email']
+
+        # Start listening to socket
+        try:
+            while True:
+                message = ws.receive()
+
+                # Has the socket died?
+                if message is None:
+                    print "Connection closed: " + data['email']
+                    del socket_list[data['email']]
+                    ws.close()
+                    break
+
+                data = json.loads(message)
+                response = post_message_to_db(data['token'], data['email'], data['message']).data
+                if not json.loads(response)['success']:
+                    # Could not post message, just return response to client.
+                    ws.send(response)
+                else:
+                    # Post successful, send messages to clients
+                    response = get_user_messages_response(data['token'], data['email']).data
+                    for socket in socket_list:
+                        socket_list[socket].send(response)
+
+        except WebSocketError as e:
+            repr(e)
+            print "Dead socket, removing it."
+            del socket_list[data['email']]
+
     return ""
 
 
@@ -204,5 +234,5 @@ def get_user_messages_response(token, email):
         return jsonify(success=False, message="No such user.", data=None)
 
     messages = db_get_user_messages(reciever['id'])
-    result = {'success': True, 'message': 'User messages retrieved', 'data': messages}
+    result = {'success': True, 'message': 'User messages retrieved', 'data': messages, 'email': email}
     return jsonify(result)

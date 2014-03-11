@@ -1,4 +1,4 @@
-// var ws;
+var ws;
 window.onload = function() {
 
     if(localStorage.token != null) {
@@ -8,6 +8,8 @@ window.onload = function() {
                 var userData = JSON.parse(xmlhttp.responseText);
                 displayView(userData.data);
                 localStorage.currentUserView = userData.data.email;
+                localStorage.currentUser = userData.data.email;
+                connectSocket();
             }
         };
         xmlhttp.open("POST", "/get_user_data_by_token", true);
@@ -23,6 +25,11 @@ window.onload = function() {
     } else if(document.getElementById("oldPassword") != null) {
         defaultBorder = document.getElementById("oldPassword").style.border;
     }
+};
+
+window.onunload = function() {
+    console.log("onUnload!");
+    ws.close();
 };
 
 /**
@@ -57,6 +64,8 @@ submitLogin = function(formData) {
                         if(xmlhttp2.readyState == 4 && xmlhttp2.status == 200) {
                             var userData = JSON.parse(xmlhttp2.responseText).data;
                             localStorage.currentUserView = userData.email;
+                            localStorage.currentUser = userData.email;
+                            connectSocket();
                             displayView(userData);                    
                         }
                     };
@@ -280,6 +289,7 @@ submitSignOut = function() {
             }
             localStorage.removeItem("token");
             localStorage.removeItem("currentUserView");
+            localStorage.removeItem("currentUser");
             location.reload();    
         }
     };
@@ -314,25 +324,8 @@ submitPostMessage = function(formData) {
             email: localStorage.currentUserView,
             message: formData.message.value
         };
+        ws.send(JSON.stringify(credentials));
         
-        ws = new WebSocket("ws://" + document.domain + ":5000/push_message");
-
-        ws.onopen = function(event) {
-            ws.send(JSON.stringify(credentials));
-        }
-
-        ws.onmessage = function(msg) {
-            var result = JSON.parse(msg.data);
-            if(result.success) {
-
-                formData.message.value = "";
-                generateWall(result.data);
-
-            } else {
-                alert("Couldn't post message.");
-            }
-            ws.close();
-        }
     } else {
         alert("Websockets not supported, so this ain't gonna work!");
     }
@@ -420,4 +413,33 @@ submitBrowse = function(formData) {
         document.getElementById("browseMessage").style.borderColor = "red";
         setTimeout(callback, 8000);
     }
+};
+
+connectSocket = function() {
+    ws = new WebSocket("ws://" + document.domain + ":5000/push_message");
+    ws.onopen = function() {
+        var data = {
+            register: true,
+            email: localStorage.currentUser
+        };
+        ws.send(JSON.stringify(data));
+    };
+
+    ws.onmessage = function(msg) {
+        
+        var result = JSON.parse(msg.data);
+        if(result.success) {
+            if(result.email == localStorage.currentUserView) {
+                document.getElementById("message").value = "";
+                generateWall(result.data);
+            }
+
+        } else {
+            alert("Couldn't post message.");
+        }            
+    };
+
+    ws.onerror = function() {
+        console.log("WebSocket error!");
+    };
 };
