@@ -35,9 +35,9 @@ def push_message():
 
                 # Has the socket died?
                 if message is None:
-                    print "Connection closed: " + data['email']
                     del socket_list[data['email']]
                     ws.close()
+                    print "Connection closed: " + data['email']
                     break
 
                 data = json.loads(message)
